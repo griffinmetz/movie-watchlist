@@ -1,37 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
 import axios from 'axios';
+import { getCurrentDate, getLastDayOfTheMonth } from './utils/date-utils';
 
 // TMDB API Key
 const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ODg2OWZhNGIzMjY1ZjEwNzY5MWRhZTQ4MGYwYTU2MiIsIm5iZiI6MTcyMTA5NDA2OC42NzgwNDUsInN1YiI6IjY2OGIxMGE5NGVmNDEzMDkxNmJhMzQxOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H9vL1HU5ZDtOIyA9I8RYV__tOCsDVdz9GJxJBKN975w';
-
-// Method to get the current date and format it for use in TMDB API call
-const getCurrentDate = () => {
-  const date = new Date();
-  const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0');
-  const year = date.getFullYear();
-
-  return `${year}-${month}-${day}`
-}
-
-const getLastDayOfTheMonth = () => {
-  const curDate = new Date();
-  const curYear = curDate.getFullYear();
-  const curMonth = curDate.getMonth();
-  
-   // Create a new date object for the first day of the next month
-   const firstDayOfNextMonth = new Date(curYear, curMonth + 1, 1);
-
-   // Subtract one day from that date
-   const lastDayOfCurrentMonth = new Date(firstDayOfNextMonth - 1);
-
-   const day = String(lastDayOfCurrentMonth.getDate()).padStart(2, '0');
-   const month = String(lastDayOfCurrentMonth.getMonth() + 1).padStart(2, '0');
-   const year = lastDayOfCurrentMonth.getFullYear();
-
-   return `${year}-${month}-${day}`
-}
 
 const startDate = getCurrentDate();
 const endDate = getLastDayOfTheMonth();
@@ -41,6 +14,9 @@ const endpointUrl = `https://api.themoviedb.org/3/discover/movie?include_adult=f
 
 
 const App = () => {
+  console.log(startDate);
+  console.log(endDate);
+
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
 
