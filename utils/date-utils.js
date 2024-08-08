@@ -8,6 +8,28 @@ export function getCurrentDate() {
     return `${year}-${month}-${day}`
 }
 
+export function getUpcomingMonths() {
+    const date = new Date();
+    const curMonth = date.getMonth();
+
+    const months = [];
+
+    
+
+    for (var i = 0; i <= 12; i++) {
+        const nextDate = new Date(date.getFullYear(), curMonth + i, 1);
+        const thisYear = nextDate.getFullYear();
+
+        const month = nextDate.toLocaleString('en-US', { month: 'long' });
+
+        months[i] = { label : month + ' ' + thisYear, value: month + ' ' + thisYear};
+
+
+    }
+    
+    return months;
+}
+
 // Method to get the date of the last day of the month and format it for use in TMDB API call
 export function getLastDayOfTheMonth() {
     const curDate = new Date();
