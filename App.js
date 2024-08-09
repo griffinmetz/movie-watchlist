@@ -1,11 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
-import axios from 'axios';
 import { getCurrentDate, getUpcomingMonths, getLastDayOfTheMonth } from './utils/date-utils';
-
-// TMDB API Key
-const apiKey = 'eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiI2ODg2OWZhNGIzMjY1ZjEwNzY5MWRhZTQ4MGYwYTU2MiIsIm5iZiI6MTcyMTA5NDA2OC42NzgwNDUsInN1YiI6IjY2OGIxMGE5NGVmNDEzMDkxNmJhMzQxOSIsInNjb3BlcyI6WyJhcGlfcmVhZCJdLCJ2ZXJzaW9uIjoxfQ.H9vL1HU5ZDtOIyA9I8RYV__tOCsDVdz9GJxJBKN975w';
+import { fetchUpcomingMovies } from './utils/tmdb-api-calls';
 
 const startDate = getCurrentDate();
 const endDate = getLastDayOfTheMonth();
@@ -13,29 +10,16 @@ const page = 1;
 
 const upcomingMonths = getUpcomingMonths();
 
-const endpointUrl = `https://api.themoviedb.org/3/discover/movie?include_adult=false&include_video=false&language=en-US&page=${page}&primary_release_year=2024&primary_release_date.gte=${startDate}&primary_release_date.lte=${endDate}&region=US&sort_by=popularity.desc`;
-
-
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [month, setMonth] = useState(upcomingMonths[0]);
 
   useEffect(() => {
-    axios.get(endpointUrl, {
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-      },
-    })
-    .then(response => {
-      setMovies(response.data.results);
-      setLoading(false);
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      setLoading(false);
+    fetchUpcomingMovies(startDate, endDate, page).then(result => {
+      setMovies(result);
     });
+    setLoading(false);
   }, []);
 
   if (loading) {
@@ -48,48 +32,28 @@ const App = () => {
 
   return (
     <View style={styles.container}>
-       
-      
-          <View style={{flexDirection: 'row', alignItems: 'center', height: 125}}>
-            <View style={{flex:.5}}>
-              <Text style={{fontSize: 24, fontWeight: 'bold'}}>Upcoming Movies</Text>
-            </View>
-            <View style={{flex:.5}}>
-              <Picker
-                onValueChange={(itemValue, itemIndex) => setMonth(itemValue)}
-              >
-                {upcomingMonths.map((month, index) => (
-                <Picker.Item key={index} label={month.label} value={month.value} />
-            ))}
-          </Picker>
-            </View>
-          </View>
-      
-
-
-        
-
-
-
-      {/* <View style={styles.titleRow}>
-        <View style={{flex:.5}}> 
-          <Text style={styles.title}>Upcoming Movies</Text>
+      <View style={{flexDirection: 'row', alignItems: 'center', height: 125}}>
+        <View style={{flex:.5}}>
+          <Text style={{fontSize: 24, fontWeight: 'bold'}}>Upcoming Movies</Text>
         </View>
         <View style={{flex:.5}}>
           <Picker
-            selectedValue={"Hi"}
-            style={styles.picker}
-            onValueChange={(itemValue, itemIndex) => setMonths(itemValue)}
+            selectedValue={month}
+            onValueChange={(itemValue, itemIndex) => {
+              setMonth(itemValue);
+              // TODO: Call method to refresh flat list
+              fetchUpcomingMovies(startDate, endDate, 1).then(result => {
+                setMovies(result);
+              });
+            }
+          }
           >
-            {months.map((month, index) => (
+            {upcomingMonths.map((month, index) => (
               <Picker.Item key={index} label={month.label} value={month.value} />
             ))}
           </Picker>
         </View>
-      </View> */}
-
-
-
+      </View>
       <FlatList
         data={movies}
         keyExtractor={(item) => item.id.toString()}

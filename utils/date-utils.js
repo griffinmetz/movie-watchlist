@@ -14,8 +14,6 @@ export function getUpcomingMonths() {
 
     const months = [];
 
-    
-
     for (var i = 0; i <= 12; i++) {
         const nextDate = new Date(date.getFullYear(), curMonth + i, 1);
         const thisYear = nextDate.getFullYear();
@@ -23,8 +21,6 @@ export function getUpcomingMonths() {
         const month = nextDate.toLocaleString('en-US', { month: 'long' });
 
         months[i] = { label : month + ' ' + thisYear, value: month + ' ' + thisYear};
-
-
     }
     
     return months;
