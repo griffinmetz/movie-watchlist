@@ -5,7 +5,7 @@ import { getCurrentDate, getUpcomingMonths, getLastDayOfTheMonth } from './utils
 import { fetchUpcomingMovies } from './utils/tmdb-api-calls';
 
 const startDate = getCurrentDate();
-const endDate = getLastDayOfTheMonth();
+const endDate = getLastDayOfTheMonth(startDate);
 const page = 1;
 
 const upcomingMonths = getUpcomingMonths();
@@ -41,8 +41,7 @@ const App = () => {
             selectedValue={month}
             onValueChange={(itemValue, itemIndex) => {
               setMonth(itemValue);
-              // TODO: Call method to refresh flat list
-              fetchUpcomingMovies(startDate, endDate, 1).then(result => {
+              fetchUpcomingMovies(itemValue, getLastDayOfTheMonth(itemValue), 1).then(result => {
                 setMovies(result);
               });
             }
