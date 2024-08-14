@@ -1,22 +1,36 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getCurrentDate, getUpcomingMonths, getLastDayOfTheMonth } from './utils/date-utils';
 import { fetchUpcomingMovies } from './utils/tmdb-api-calls';
 
 const startDate = getCurrentDate();
 const endDate = getLastDayOfTheMonth(startDate);
-const page = 1;
+let curPage = 1;
 
 const upcomingMonths = getUpcomingMonths();
+
+
 
 const App = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [month, setMonth] = useState(upcomingMonths[0]);
 
+  const pageSelectorPress = (page) => {
+    console.log('Button Pressed! ' + page);
+    
+    if (page > 0) {
+      curPage = page;
+    }
+
+    fetchUpcomingMovies(startDate, endDate, curPage).then(result => {
+      setMovies(result);
+    });
+  };
+
   useEffect(() => {
-    fetchUpcomingMovies(startDate, endDate, page).then(result => {
+    fetchUpcomingMovies(startDate, endDate, curPage).then(result => {
       setMovies(result);
     });
     setLoading(false);
@@ -40,6 +54,7 @@ const App = () => {
           <Picker
             selectedValue={month}
             onValueChange={(itemValue, itemIndex) => {
+              // TODO: Set the curStartDate and endDate
               setMonth(itemValue);
               fetchUpcomingMovies(itemValue, getLastDayOfTheMonth(itemValue), 1).then(result => {
                 setMovies(result);
@@ -69,6 +84,16 @@ const App = () => {
           </View>
         )}
       />
+
+      <TouchableOpacity style={styles.button} onPress={() => pageSelectorPress(curPage-1)}>
+        <Text style={styles.buttonText}>Previous Page</Text>
+      </TouchableOpacity>
+
+      <TouchableOpacity style={styles.button} onPress={() => pageSelectorPress(curPage+1)}>
+        <Text style={styles.buttonText}>Next Page</Text>
+      </TouchableOpacity>
+
+
     </View>
   );
 };
@@ -79,6 +104,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingTop: 75,
     paddingLeft: 25,
+    paddingBottom: 50,
     width: '100%',
     backgroundColor: '#f5f5f5', // Optional: Add a background color to distinguish content
   },
