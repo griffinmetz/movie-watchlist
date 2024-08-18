@@ -9,6 +9,7 @@ export function getCurrentDate() {
 }
 
 export function getUpcomingMonths() {
+    // TODO: Comments
     const date = new Date();
     const curMonth = date.getMonth();
 

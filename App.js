@@ -4,13 +4,11 @@ import { Picker } from '@react-native-picker/picker';
 import { getCurrentDate, getUpcomingMonths, getLastDayOfTheMonth } from './utils/date-utils';
 import { fetchUpcomingMovies } from './utils/tmdb-api-calls';
 
-const startDate = getCurrentDate();
-const endDate = getLastDayOfTheMonth(startDate);
+let curStartDate = getCurrentDate();
+let curEndDate = getLastDayOfTheMonth(curStartDate);
 let curPage = 1;
 
 const upcomingMonths = getUpcomingMonths();
-
-
 
 const App = () => {
   const [movies, setMovies] = useState([]);
@@ -24,13 +22,13 @@ const App = () => {
       curPage = page;
     }
 
-    fetchUpcomingMovies(startDate, endDate, curPage).then(result => {
+    fetchUpcomingMovies(curStartDate, curEndDate, curPage).then(result => {
       setMovies(result);
     });
   };
 
   useEffect(() => {
-    fetchUpcomingMovies(startDate, endDate, curPage).then(result => {
+    fetchUpcomingMovies(curStartDate, curEndDate, curPage).then(result => {
       setMovies(result);
     });
     setLoading(false);
@@ -54,9 +52,11 @@ const App = () => {
           <Picker
             selectedValue={month}
             onValueChange={(itemValue, itemIndex) => {
-              // TODO: Set the curStartDate and endDate
+              curStartDate = itemValue;
+              curEndDate = getLastDayOfTheMonth(itemValue);
+
               setMonth(itemValue);
-              fetchUpcomingMovies(itemValue, getLastDayOfTheMonth(itemValue), 1).then(result => {
+              fetchUpcomingMovies(curStartDate, curEndDate, 1).then(result => {
                 setMovies(result);
               });
             }
@@ -92,8 +92,6 @@ const App = () => {
       <TouchableOpacity style={styles.button} onPress={() => pageSelectorPress(curPage+1)}>
         <Text style={styles.buttonText}>Next Page</Text>
       </TouchableOpacity>
-
-
     </View>
   );
 };
