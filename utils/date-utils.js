@@ -8,8 +8,11 @@ export function getCurrentDate() {
     return `${year}-${month}-${day}`
 }
 
+// Method to build an array of the upcoming months based on the current month + the next 12
+// Each entry in this array will contain a label in the format "[Month] [Year]"
+// and a value of the first date to the use for the month in the format "[Year]-[Month]-[Day]".
+// This value will be the first day of the month, except for the current month, for which it will be the current date.
 export function getUpcomingMonths() {
-    // TODO: Comments
     const date = new Date();
     const curMonth = date.getMonth();
 

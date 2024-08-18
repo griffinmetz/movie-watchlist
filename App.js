@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, FlatList, Image, StyleSheet, TouchableOpacity, Pressable } from 'react-native';
 import { Picker } from '@react-native-picker/picker';
 import { getCurrentDate, getUpcomingMonths, getLastDayOfTheMonth } from './utils/date-utils';
 import { fetchUpcomingMovies } from './utils/tmdb-api-calls';
@@ -14,10 +14,9 @@ const App = () => {
   const [movies, setMovies] = useState([]);
   const [loading, setLoading] = useState(true);
   const [month, setMonth] = useState(upcomingMonths[0]);
+  const [myUpcomingMovieWatchlist, setMyUpcomingMovieWatchlist] = useState([]);
 
-  const pageSelectorPress = (page) => {
-    console.log('Button Pressed! ' + page);
-    
+  const pageSelectorPress = (page) => {  
     if (page > 0) {
       curPage = page;
     }
@@ -26,6 +25,10 @@ const App = () => {
       setMovies(result);
     });
   };
+
+  const addMovie = () => {
+    console.log("Add Movie!");
+  }
 
   useEffect(() => {
     fetchUpcomingMovies(curStartDate, curEndDate, curPage).then(result => {
@@ -81,6 +84,9 @@ const App = () => {
               <Text style={styles.movieTitle}>{item.title}</Text>
               <Text style={styles.releaseDate}>Release Date: {item.release_date}</Text>
             </View>
+            <Pressable style={styles.addMovieButton} onPress={() => addMovie()}>
+              <Text style={styles.addMoviePlus}>+</Text>
+            </Pressable>
           </View>
         )}
       />
@@ -161,6 +167,17 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: 'grey',
   },
+  addMovieButton: {
+    backgroundColor: '#90EE90',
+    width: 50,
+    justifyContent: 'center',  // Centers vertically   
+    alignItems: 'center',      // Centers horizontally
+  },
+  addMoviePlus: {
+    color: 'white',
+    fontSize: 30,
+    fontWeight: 'bold',
+  }
 });
 
 export default App;
